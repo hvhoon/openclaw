@@ -276,6 +276,7 @@ export {
   TaskSuggestionsDismissResultSchema,
   TaskSuggestionsListParamsSchema,
   TaskSuggestionsListResultSchema,
+  TaskCompletionReceiptSchema,
   TaskSummarySchema,
   TasksListParamsSchema,
   TasksListResultSchema,

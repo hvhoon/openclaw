@@ -391,6 +391,7 @@ export type {
   TaskSuggestionsDismissResult,
   TaskSuggestionsListParams,
   TaskSuggestionsListResult,
+  TaskCompletionReceipt,
   TaskSummary,
   TasksListParams,
   TasksListResult,

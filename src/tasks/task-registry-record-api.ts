@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { normalizeOptionalString } from "@openclaw/normalization-core/string-coerce";
 import { normalizeDeliveryContext } from "../utils/delivery-context.shared.js";
+import type { TaskCompletionReceipt } from "./task-completion-receipt.js";
 import { isTerminalTaskStatus } from "./task-executor-policy.js";
 import {
   appendTaskEvent,
@@ -71,6 +72,7 @@ export function markTaskTerminalById(params: {
   lastEventAt?: number;
   error?: string;
   terminalSummary?: string | null;
+  completionReceipt?: TaskCompletionReceipt | null;
   preserveTerminalSummary?: boolean;
   terminalOutcome?: TaskTerminalOutcome | null;
   detail?: JsonValue;
@@ -89,6 +91,9 @@ export function markTaskTerminalById(params: {
             ? (params.terminalSummary ?? undefined)
             : normalizeTaskSummary(params.terminalSummary),
         }
+      : {}),
+    ...(params.completionReceipt !== undefined
+      ? { completionReceipt: params.completionReceipt ?? undefined }
       : {}),
     ...(params.terminalOutcome !== undefined
       ? {
@@ -307,6 +312,7 @@ export function updateTaskStateByRunId(params: {
   clearError?: boolean;
   progressSummary?: string | null;
   terminalSummary?: string | null;
+  completionReceipt?: TaskCompletionReceipt | null;
   preserveTerminalSummary?: boolean;
   terminalOutcome?: TaskTerminalOutcome | null;
   detail?: JsonValue;
@@ -371,6 +377,9 @@ export function updateTaskStateByRunId(params: {
       patch.terminalSummary = params.preserveTerminalSummary
         ? (params.terminalSummary ?? undefined)
         : normalizeTaskSummary(params.terminalSummary);
+    }
+    if (params.completionReceipt !== undefined) {
+      patch.completionReceipt = params.completionReceipt ?? undefined;
     }
     if (params.terminalOutcome !== undefined) {
       patch.terminalOutcome = resolveTaskTerminalOutcome({
@@ -492,6 +501,7 @@ export function finalizeTaskRunByRunId(params: {
   clearError?: boolean;
   progressSummary?: string | null;
   terminalSummary?: string | null;
+  completionReceipt?: TaskCompletionReceipt | null;
   preserveTerminalSummary?: boolean;
   terminalOutcome?: TaskTerminalOutcome | null;
   detail?: JsonValue;
@@ -510,6 +520,7 @@ export function finalizeTaskRunByRunId(params: {
     clearError: params.clearError,
     progressSummary: params.progressSummary,
     terminalSummary: params.terminalSummary,
+    completionReceipt: params.completionReceipt,
     preserveTerminalSummary: params.preserveTerminalSummary,
     terminalOutcome: params.terminalOutcome,
     detail: params.detail,

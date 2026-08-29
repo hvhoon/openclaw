@@ -376,6 +376,40 @@ describe("tasks gateway handlers", () => {
     expect(JSON.stringify(calls[0]?.[1])).not.toContain("OpenClaw runtime context");
   });
 
+  it("exposes only validated structured completion receipts", async () => {
+    const completionReceipt = {
+      schema_version: "q_completion_receipt/v1" as const,
+      outcome: "completed" as const,
+      work_performed: ["Implemented the handoff."],
+      mutations_made: ["Updated the task protocol."],
+      authoritative_state_observed: ["Focused tests passed."],
+      stopping_reason: "Work is complete.",
+      remaining_work: [],
+      evidence_references: ["https://example.test/pr/1"],
+    };
+    const task = createTaskRecord({
+      runtime: "subagent",
+      requesterSessionKey: "agent:main:main",
+      ownerKey: "agent:main:main",
+      scopeKind: "session",
+      task: "Implement the handoff",
+      status: "running",
+      deliveryStatus: "pending",
+    });
+    markTaskTerminalById({
+      taskId: task.taskId,
+      status: "succeeded",
+      endedAt: Date.now(),
+      terminalSummary: "Display text stays separate.",
+      completionReceipt,
+    });
+
+    const { payload } = await getTaskPayload(task.taskId);
+
+    expect(payload?.task?.completionReceipt).toEqual(completionReceipt);
+    expect(payload?.task?.terminalSummary).toBe("Display text stays separate.");
+  });
+
   it("exposes tool activity in task summaries", async () => {
     const task = createTaskRecord({
       runtime: "subagent",

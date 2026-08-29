@@ -22,6 +22,26 @@ const TaskLedgerStatusSchema = Type.Union([
 
 const TimestampSchema = Type.Union([Type.String(), Type.Integer({ minimum: 0 })]);
 
+const CompletionReceiptTextSchema = Type.String({ maxLength: 1_000 });
+const CompletionReceiptTextListSchema = Type.Array(CompletionReceiptTextSchema, { maxItems: 20 });
+
+/** Validated structured evidence emitted as the executor's complete final payload. */
+export const TaskCompletionReceiptSchema = closedObject({
+  schema_version: Type.Literal("q_completion_receipt/v1"),
+  outcome: Type.Union([
+    Type.Literal("completed"),
+    Type.Literal("stopped_safely"),
+    Type.Literal("blocked"),
+    Type.Literal("failed"),
+  ]),
+  work_performed: CompletionReceiptTextListSchema,
+  mutations_made: CompletionReceiptTextListSchema,
+  authoritative_state_observed: CompletionReceiptTextListSchema,
+  stopping_reason: CompletionReceiptTextSchema,
+  remaining_work: CompletionReceiptTextListSchema,
+  evidence_references: Type.Array(Type.String({ maxLength: 512 }), { maxItems: 20 }),
+});
+
 /** Public task summary returned by task list/get/cancel responses. */
 export const TaskSummarySchema = closedObject({
   id: NonEmptyString,
@@ -46,6 +66,7 @@ export const TaskSummarySchema = closedObject({
   lastToolName: Type.Optional(Type.String()),
   progressSummary: Type.Optional(Type.String()),
   terminalSummary: Type.Optional(Type.String()),
+  completionReceipt: Type.Optional(TaskCompletionReceiptSchema),
   error: Type.Optional(Type.String()),
   /** Bounded task input. Returned by tasks.get; omitted from list/event summaries. */
   prompt: Type.Optional(Type.String()),
@@ -93,6 +114,7 @@ export const TasksCancelResultSchema = closedObject({
 // Wire types derive directly from local schema consts so public d.ts graphs never
 // pull in the ProtocolSchemas registry.
 export type TaskSummary = Static<typeof TaskSummarySchema>;
+export type TaskCompletionReceipt = Static<typeof TaskCompletionReceiptSchema>;
 export type TasksListParams = Static<typeof TasksListParamsSchema>;
 export type TasksListResult = Static<typeof TasksListResultSchema>;
 export type TasksGetParams = Static<typeof TasksGetParamsSchema>;

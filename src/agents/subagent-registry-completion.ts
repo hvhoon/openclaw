@@ -10,6 +10,7 @@ import {
   type DetachedTaskTerminalState,
 } from "../tasks/detached-task-runtime-contract.js";
 import { resolveRequiredCompletionTerminalResult } from "../tasks/task-completion-contract.js";
+import { parseTaskCompletionReceipt } from "../tasks/task-completion-receipt.js";
 import type { SubagentRunOutcome } from "./subagent-announce-output.js";
 import {
   SUBAGENT_ENDED_REASON_KILLED,
@@ -84,6 +85,7 @@ export function resolveFinalizedSubagentTaskState(
     return undefined;
   }
   const progressSummary = completion.resultText ?? undefined;
+  const completionReceipt = parseTaskCompletionReceipt(completion.resultText);
   if (
     entry.endedReason === SUBAGENT_ENDED_REASON_KILLED &&
     entry.suppressAnnounceReason !== "steer-restart"
@@ -108,6 +110,7 @@ export function resolveFinalizedSubagentTaskState(
       lastEventAt: endedAt,
       progressSummary,
       terminalSummary: terminal.terminalSummary ?? null,
+      completionReceipt,
       terminalOutcome: terminal.terminalOutcome,
     };
   }

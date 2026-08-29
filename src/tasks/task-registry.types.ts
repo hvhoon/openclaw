@@ -1,5 +1,6 @@
 // Defines task registry records, statuses, delivery state, and parser helpers.
 import type { DeliveryContext } from "../utils/delivery-context.types.js";
+import type { TaskCompletionReceipt } from "./task-completion-receipt.js";
 
 /** JSON value shape persisted with runtime-owned task detail. */
 export type JsonValue =
@@ -155,6 +156,7 @@ export type TaskRecord = {
   error?: string;
   progressSummary?: string;
   terminalSummary?: string;
+  completionReceipt?: TaskCompletionReceipt;
   terminalOutcome?: TaskTerminalOutcome;
   detail?: JsonValue;
 };

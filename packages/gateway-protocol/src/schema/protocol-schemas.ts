@@ -622,6 +622,7 @@ import {
   TaskSuggestionsListResultSchema,
 } from "./task-suggestions.js";
 import {
+  TaskCompletionReceiptSchema,
   TasksCancelParamsSchema,
   TasksCancelResultSchema,
   TasksGetParamsSchema,
@@ -981,6 +982,7 @@ export const ProtocolSchemas = {
   TaskSuggestionsDismissResult: TaskSuggestionsDismissResultSchema,
   TaskSuggestionsListParams: TaskSuggestionsListParamsSchema,
   TaskSuggestionsListResult: TaskSuggestionsListResultSchema,
+  TaskCompletionReceipt: TaskCompletionReceiptSchema,
   TaskSummary: TaskSummarySchema,
   TasksListParams: TasksListParamsSchema,
   TasksListResult: TasksListResultSchema,

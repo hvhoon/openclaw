@@ -1,6 +1,7 @@
 // Public task summaries keep task-registry internals and unbounded status text
 // out of gateway responses and events.
 import type { TaskSummary } from "../../../packages/gateway-protocol/src/index.js";
+import { parseTaskCompletionReceipt } from "../../tasks/task-completion-receipt.js";
 import type { TaskRecord, TaskStatus } from "../../tasks/task-registry.types.js";
 import {
   TASK_STATUS_DETAIL_MAX_CHARS,
@@ -46,6 +47,9 @@ function sanitizeOptionalTaskText(
 export function mapTaskSummary(task: TaskRecord, opts?: { includePrompt?: boolean }): TaskSummary {
   const progressSummary = sanitizeOptionalTaskText(task.progressSummary);
   const terminalSummary = sanitizeOptionalTaskText(task.terminalSummary, { errorContext: true });
+  const completionReceipt = task.completionReceipt
+    ? parseTaskCompletionReceipt(JSON.stringify(task.completionReceipt))
+    : undefined;
   const error = sanitizeOptionalTaskText(task.error, { errorContext: true });
   const lastToolName = sanitizeOptionalTaskText(task.lastToolName);
   const prompt = opts?.includePrompt
@@ -78,6 +82,7 @@ export function mapTaskSummary(task: TaskRecord, opts?: { includePrompt?: boolea
     ...(lastToolName ? { lastToolName } : {}),
     ...(progressSummary ? { progressSummary } : {}),
     ...(terminalSummary ? { terminalSummary } : {}),
+    ...(completionReceipt ? { completionReceipt } : {}),
     ...(error ? { error } : {}),
     ...(prompt ? { prompt } : {}),
   };

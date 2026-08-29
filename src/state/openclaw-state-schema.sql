@@ -1421,6 +1421,7 @@ CREATE TABLE IF NOT EXISTS task_runs (
   error TEXT,
   progress_summary TEXT,
   terminal_summary TEXT,
+  completion_receipt_json TEXT,
   terminal_outcome TEXT,
   detail_json TEXT
 ) STRICT;

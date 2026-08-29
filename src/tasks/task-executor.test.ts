@@ -249,11 +249,23 @@ describe("task-executor", () => {
         eventSummary: "Started.",
       });
 
+      const completionReceipt = {
+        schema_version: "q_completion_receipt/v1" as const,
+        outcome: "completed" as const,
+        work_performed: ["Investigated the issue."],
+        mutations_made: [],
+        authoritative_state_observed: ["The issue is resolved."],
+        stopping_reason: "Work is complete.",
+        remaining_work: [],
+        evidence_references: [],
+      };
+
       completeTaskRunByRunId({
         runId: "run-executor-queued",
         endedAt: 250,
         lastEventAt: 250,
         terminalSummary: "Done.",
+        completionReceipt,
       });
 
       const task = getTaskById(created.taskId);
@@ -262,6 +274,7 @@ describe("task-executor", () => {
       expect(task?.startedAt).toBe(100);
       expect(task?.endedAt).toBe(250);
       expect(task?.terminalSummary).toBe("Done.");
+      expect(task?.completionReceipt).toEqual(completionReceipt);
     });
   });
 

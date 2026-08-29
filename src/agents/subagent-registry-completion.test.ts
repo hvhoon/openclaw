@@ -176,3 +176,49 @@ describe("emitSubagentEndedHookOnce", () => {
     expect(entry.endedHookEmittedAt).toBeUndefined();
   });
 });
+
+describe("resolveFinalizedSubagentTaskState", () => {
+  let mod: typeof import("./subagent-registry-completion.js");
+
+  beforeAll(async () => {
+    mod = await import("./subagent-registry-completion.js");
+  });
+
+  it("carries a validated final receipt without deriving task status from its outcome", () => {
+    const receipt = {
+      schema_version: "q_completion_receipt/v1",
+      outcome: "failed",
+      work_performed: ["Ran diagnostics."],
+      mutations_made: [],
+      authoritative_state_observed: ["The dependency was unavailable."],
+      stopping_reason: "Stopped safely.",
+      remaining_work: ["Retry when the dependency is available."],
+      evidence_references: [],
+    };
+    const entry: SubagentRunRecord = {
+      ...createRunEntry(),
+      endedAt: 2_000,
+      outcome: { status: "ok" },
+      expectsCompletionMessage: true,
+      completion: { required: true, resultText: JSON.stringify(receipt), capturedAt: 2_000 },
+    };
+
+    const terminal = mod.resolveFinalizedSubagentTaskState(entry);
+
+    expect(terminal?.status).toBe("succeeded");
+    expect(terminal?.terminalOutcome).toBeUndefined();
+    expect(terminal?.completionReceipt).toEqual(receipt);
+  });
+
+  it("does not promote arbitrary final assistant text", () => {
+    const entry: SubagentRunRecord = {
+      ...createRunEntry(),
+      endedAt: 2_000,
+      outcome: { status: "ok" },
+      expectsCompletionMessage: true,
+      completion: { required: true, resultText: "Ordinary final answer.", capturedAt: 2_000 },
+    };
+
+    expect(mod.resolveFinalizedSubagentTaskState(entry)?.completionReceipt).toBeUndefined();
+  });
+});
