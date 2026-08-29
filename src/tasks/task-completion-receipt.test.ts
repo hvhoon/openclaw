@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  parseTaskCompletionReceipt,
-  TASK_COMPLETION_RECEIPT_MAX_BYTES,
-} from "./task-completion-receipt.js";
+import { parseTaskCompletionReceipt } from "./task-completion-receipt.js";
 
 function validReceipt() {
   return {
@@ -36,7 +33,7 @@ describe("parseTaskCompletionReceipt", () => {
       "too many entries",
       JSON.stringify({ ...validReceipt(), remaining_work: Array(21).fill("x") }),
     ],
-    ["oversized payload", " ".repeat(TASK_COMPLETION_RECEIPT_MAX_BYTES + 1)],
+    ["oversized payload", " ".repeat(16_385)],
   ])("rejects %s", (_label, payload) => {
     expect(parseTaskCompletionReceipt(payload)).toBeUndefined();
   });

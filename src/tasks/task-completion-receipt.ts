@@ -1,11 +1,11 @@
 // Validates the only structured executor output eligible for public task receipts.
 import { Buffer } from "node:buffer";
 
-export const TASK_COMPLETION_RECEIPT_SCHEMA_VERSION = "q_completion_receipt/v1" as const;
-export const TASK_COMPLETION_RECEIPT_MAX_BYTES = 16_384;
-export const TASK_COMPLETION_RECEIPT_MAX_ITEMS = 20;
-export const TASK_COMPLETION_RECEIPT_TEXT_MAX_BYTES = 1_000;
-export const TASK_COMPLETION_RECEIPT_EVIDENCE_MAX_BYTES = 512;
+const TASK_COMPLETION_RECEIPT_SCHEMA_VERSION = "q_completion_receipt/v1" as const;
+const TASK_COMPLETION_RECEIPT_MAX_BYTES = 16_384;
+const TASK_COMPLETION_RECEIPT_MAX_ITEMS = 20;
+const TASK_COMPLETION_RECEIPT_TEXT_MAX_BYTES = 1_000;
+const TASK_COMPLETION_RECEIPT_EVIDENCE_MAX_BYTES = 512;
 
 const TASK_COMPLETION_RECEIPT_OUTCOMES = new Set([
   "completed",
