@@ -51,6 +51,7 @@ export type {
   SessionCreateParams,
   SessionSendParams,
   SessionTarget,
+  TaskCompletionReceipt,
   TaskStatus,
   TaskSummary,
   TasksCancelResult,

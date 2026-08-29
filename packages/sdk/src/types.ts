@@ -167,6 +167,18 @@ export type ArtifactsDownloadResult = {
 
 export type TaskStatus = "queued" | "running" | "completed" | "failed" | "cancelled" | "timed_out";
 
+/** Validated structured evidence emitted as a task executor's complete final payload. */
+export type TaskCompletionReceipt = {
+  schema_version: "q_completion_receipt/v1";
+  outcome: "completed" | "stopped_safely" | "blocked" | "failed";
+  work_performed: string[];
+  mutations_made: string[];
+  authoritative_state_observed: string[];
+  stopping_reason: string;
+  remaining_work: string[];
+  evidence_references: string[];
+};
+
 /** Gateway task summary returned by task list/get calls. */
 export type TaskSummary = {
   id: string;
@@ -189,6 +201,7 @@ export type TaskSummary = {
   endedAt?: RunTimestamp;
   progressSummary?: string;
   terminalSummary?: string;
+  completionReceipt?: TaskCompletionReceipt;
   error?: string;
 };
 

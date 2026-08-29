@@ -1,6 +1,7 @@
 // OpenClaw SDK tests cover index behavior.
 import { describe, expect, it } from "vitest";
 import { EventHub, OpenClaw, normalizeGatewayEvent } from "./index.js";
+import type { TaskCompletionReceipt } from "./index.js";
 import type {
   GatewayEvent,
   GatewayRequestOptions,
@@ -574,6 +575,16 @@ describe("OpenClaw SDK", () => {
   });
 
   it("calls task ledger Gateway methods", async () => {
+    const completionReceipt: TaskCompletionReceipt = {
+      schema_version: "q_completion_receipt/v1",
+      outcome: "completed",
+      work_performed: ["Implemented the requested change."],
+      mutations_made: ["Merged the reviewed repository change."],
+      authoritative_state_observed: ["Canonical main contains the merge commit."],
+      stopping_reason: "The repository outcome is complete.",
+      remaining_work: [],
+      evidence_references: ["https://example.test/pull/1"],
+    };
     const transport = new FakeTransport({
       "tasks.list": {
         tasks: [
@@ -583,6 +594,7 @@ describe("OpenClaw SDK", () => {
             title: "Investigate issue",
             runId: "run_123",
             sessionKey: "agent:main:main",
+            completionReceipt,
           },
         ],
       },
@@ -591,6 +603,7 @@ describe("OpenClaw SDK", () => {
           id: "task_123",
           status: "running",
           title: "Investigate issue",
+          completionReceipt,
         },
       },
       "tasks.cancel": {
@@ -616,6 +629,7 @@ describe("OpenClaw SDK", () => {
         title: "Investigate issue",
         runId: "run_123",
         sessionKey: "agent:main:main",
+        completionReceipt,
       },
     ]);
     const taskGet = await oc.tasks.get("task_123");
@@ -623,6 +637,7 @@ describe("OpenClaw SDK", () => {
       id: "task_123",
       status: "running",
       title: "Investigate issue",
+      completionReceipt,
     });
     const taskCancel = await oc.tasks.cancel("task_123", { reason: "user stopped task" });
     expect(taskCancel.found).toBe(true);
