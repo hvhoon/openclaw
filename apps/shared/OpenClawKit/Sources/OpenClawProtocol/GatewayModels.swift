@@ -8710,6 +8710,48 @@ public struct TaskSuggestionsListResult: Codable, Sendable {
     }
 }
 
+public struct TaskCompletionReceipt: Codable, Sendable {
+    public let schemaVersion: String
+    public let outcome: AnyCodable
+    public let workPerformed: [String]
+    public let mutationsMade: [String]
+    public let authoritativeStateObserved: [String]
+    public let stoppingReason: String
+    public let remainingWork: [String]
+    public let evidenceReferences: [String]
+
+    public init(
+        schemaVersion: String,
+        outcome: AnyCodable,
+        workPerformed: [String],
+        mutationsMade: [String],
+        authoritativeStateObserved: [String],
+        stoppingReason: String,
+        remainingWork: [String],
+        evidenceReferences: [String])
+    {
+        self.schemaVersion = schemaVersion
+        self.outcome = outcome
+        self.workPerformed = workPerformed
+        self.mutationsMade = mutationsMade
+        self.authoritativeStateObserved = authoritativeStateObserved
+        self.stoppingReason = stoppingReason
+        self.remainingWork = remainingWork
+        self.evidenceReferences = evidenceReferences
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion = "schema_version"
+        case outcome
+        case workPerformed = "work_performed"
+        case mutationsMade = "mutations_made"
+        case authoritativeStateObserved = "authoritative_state_observed"
+        case stoppingReason = "stopping_reason"
+        case remainingWork = "remaining_work"
+        case evidenceReferences = "evidence_references"
+    }
+}
+
 public struct TaskSummary: Codable, Sendable {
     public let id: String
     public let kind: String?
@@ -8733,6 +8775,7 @@ public struct TaskSummary: Codable, Sendable {
     public let lasttoolname: String?
     public let progresssummary: String?
     public let terminalsummary: String?
+    public let completionreceipt: TaskCompletionReceipt?
     public let error: String?
     public let prompt: String?
 
@@ -8759,6 +8802,7 @@ public struct TaskSummary: Codable, Sendable {
         lasttoolname: String? = nil,
         progresssummary: String? = nil,
         terminalsummary: String? = nil,
+        completionreceipt: TaskCompletionReceipt? = nil,
         error: String? = nil,
         prompt: String? = nil)
     {
@@ -8784,6 +8828,7 @@ public struct TaskSummary: Codable, Sendable {
         self.lasttoolname = lasttoolname
         self.progresssummary = progresssummary
         self.terminalsummary = terminalsummary
+        self.completionreceipt = completionreceipt
         self.error = error
         self.prompt = prompt
     }
@@ -8811,6 +8856,7 @@ public struct TaskSummary: Codable, Sendable {
         case lasttoolname = "lastToolName"
         case progresssummary = "progressSummary"
         case terminalsummary = "terminalSummary"
+        case completionreceipt = "completionReceipt"
         case error
         case prompt
     }

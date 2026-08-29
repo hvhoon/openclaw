@@ -11,6 +11,7 @@ import {
   openOpenClawStateDatabase,
   runOpenClawStateWriteTransaction,
 } from "../state/openclaw-state-db.js";
+import { parseTaskCompletionReceipt } from "./task-completion-receipt.js";
 import { parseDeliveryContextJson } from "./task-registry.sqlite.shared.js";
 import type { TaskRegistryStoreSnapshot } from "./task-registry.store.types.js";
 import {
@@ -79,6 +80,7 @@ const TASK_RUN_SELECT_COLUMNS = [
   "error",
   "progress_summary",
   "terminal_summary",
+  "completion_receipt_json",
   "terminal_outcome",
   "detail_json",
 ] as const;
@@ -108,6 +110,7 @@ function rowToTaskRecord(row: TaskRegistryRow): TaskRecord {
   const toolUseCount = normalizeSqliteNumber(row.tool_use_count);
   const scopeKind = parseTaskScopeKind(row.scope_kind);
   const terminalOutcome = parseOptionalTaskTerminalOutcome(row.terminal_outcome);
+  const completionReceipt = parseTaskCompletionReceipt(row.completion_receipt_json);
   const detail = parseJsonValue(row.detail_json);
   // System tasks intentionally have no requester session; ownerKey is the lookup anchor.
   const requesterSessionKey =
@@ -141,6 +144,7 @@ function rowToTaskRecord(row: TaskRegistryRow): TaskRecord {
     ...(row.error ? { error: row.error } : {}),
     ...(row.progress_summary ? { progressSummary: row.progress_summary } : {}),
     ...(row.terminal_summary !== null ? { terminalSummary: row.terminal_summary } : {}),
+    ...(completionReceipt ? { completionReceipt } : {}),
     ...(terminalOutcome ? { terminalOutcome } : {}),
     ...(detail !== undefined ? { detail } : {}),
   };
@@ -186,6 +190,7 @@ function bindTaskRecordBase(record: TaskRecord): Insertable<TaskRunsTable> {
     error: record.error ?? null,
     progress_summary: record.progressSummary ?? null,
     terminal_summary: record.terminalSummary ?? null,
+    completion_receipt_json: serializeJson(record.completionReceipt),
     terminal_outcome: record.terminalOutcome ?? null,
     detail_json: serializeJson(record.detail),
   };

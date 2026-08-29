@@ -1223,6 +1223,7 @@ export interface TaskRuns {
   agent_id: string | null;
   child_session_key: string | null;
   cleanup_after: number | null;
+  completion_receipt_json: string | null;
   created_at: number;
   delivery_status: string;
   detail_json: string | null;

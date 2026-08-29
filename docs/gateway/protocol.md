@@ -826,9 +826,24 @@ return sanitized task summaries, not raw runtime state.
 `TaskSummary` includes `id`, `status`, and optional metadata: `kind`,
 `runtime`, `title`, `agentId`, `sessionKey`, `childSessionKey`, `ownerKey`,
 `runId`, `taskId`, `flowId`, `parentTaskId`, `sourceId`, timestamps, progress,
-terminal summary, and sanitized error text. `agentId` identifies the agent
+terminal summary, a completion receipt, and sanitized error text. `agentId` identifies the agent
 executing the task; `sessionKey` and `ownerKey` preserve requester and control
 context.
+
+`completionReceipt`, when present, is evidence captured from an executor's
+complete final response. It is a closed `q_completion_receipt/v1` object with
+`outcome`, `work_performed`, `mutations_made`,
+`authoritative_state_observed`, `stopping_reason`, `remaining_work`, and
+`evidence_references`. OpenClaw accepts only an exact JSON final response that
+matches this versioned shape: up to 20 entries per array, 1,000 UTF-8 bytes per
+text item and `stopping_reason`, 512 UTF-8 bytes per evidence reference, and
+16,384 UTF-8 bytes for the whole receipt. Embedded JSON and fenced JSON are
+not accepted.
+
+The receipt is diagnostic evidence only. It does not affect task status or
+terminal outcome. `terminalSummary` remains bounded display text. Prompts,
+transcripts, arbitrary assistant text, tool arguments or results, and raw
+errors are never promoted into `completionReceipt`.
 
 ## Operator helper methods
 

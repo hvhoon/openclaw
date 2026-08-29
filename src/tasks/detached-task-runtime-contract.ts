@@ -1,5 +1,6 @@
 // Defines the detached task runtime contract and spawn options.
 import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { TaskCompletionReceipt } from "./task-completion-receipt.js";
 import type {
   JsonValue,
   TaskDeliveryState,
@@ -72,6 +73,7 @@ type DetachedTaskFinalizeCommonParams = {
   lastEventAt?: number;
   progressSummary?: string | null;
   terminalSummary?: string | null;
+  completionReceipt?: TaskCompletionReceipt | null;
   preserveTerminalSummary?: boolean;
   detail?: JsonValue;
   suppressDelivery?: boolean;
